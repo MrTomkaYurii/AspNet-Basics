@@ -40,12 +40,12 @@ ASP.NET Core створює нову DI-область на **кожен HTTP-з
 
 ## Спробуйте самі
 
-1. `GET /ids` — у відповіді: `transient_1 ≠ transient_2`, `scoped_1 == scoped_2`,
-   `viaMiddleware.scoped == directEndpoint.scoped_1`, `singleton` скрізь однаковий.
-2. Перезавантажте `GET /ids` — `scoped_*` змінились, `singleton` — ні.
-3. `GET /manual-scope` — дві області → два різних Scoped Id.
-4. Розкоментуйте `BrokenSingleton` (додайте клас із конструктором від
-   `IScopedOperation`) і запустіть — застосунок впаде на старті з поясненням.
+1. `GET /ids` — `transientA ≠ transientB`; `scoped == scopedFromMiddleware`;
+   `singleton` скрізь однаковий.
+2. Перезавантажте `GET /ids` — `scoped` змінився, `singleton` — ні.
+3. `GET /scopes` — дві області → два різних Scoped Id.
+4. Спробуйте зареєструвати сервіс, що бере `IScopedOperation` у конструктор, як
+   `Singleton` — застосунок впаде на старті: `Cannot consume scoped service …`.
 
 ## Посилання
 

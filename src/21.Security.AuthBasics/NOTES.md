@@ -61,8 +61,7 @@ claims (`sub`, `role`, `exp`, власні). Підпис (тут HMAC-SHA256 с
 3. `POST /token` `{ "username": "alice", "password": "password" }` → скопіюйте `access_token`.
 4. `GET /me` з `Authorization: Bearer <token>` → ваші claims.
 5. `GET /admin` з токеном **alice** → `200`; з токеном **bob** → `403` (немає ролі admin).
-6. `GET /premium`: alice → `200`, bob → `403`. `GET /adult`: alice (30) → `200`, bob (16) → `403`.
-7. Зіпсуйте один символ у токені → `401` (підпис не збігається).
+6. Зіпсуйте один символ у токені → `401` (підпис не збігається).
 
 ## Посилання
 

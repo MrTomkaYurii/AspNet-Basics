@@ -12,8 +12,13 @@
   <ItemGroup>
     <!-- Генерація документа OpenAPI — вбудована в .NET (без сторонніх залежностей). -->
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
-    <!-- Лише інтерактивний UI поверх готового /openapi/v1.json. -->
+    <!--
+      Два різних UI поверх ОДНОГО документа /openapi/v1.json — працюють паралельно:
+        • Swagger UI (класика, /swagger)
+        • Scalar    (сучасний, /scalar) — на нього орієнтуються шаблони .NET 9+
+    -->
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.17.2" />
   </ItemGroup>
 
   <ItemGroup>

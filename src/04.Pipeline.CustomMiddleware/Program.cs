@@ -1,48 +1,50 @@
+using Common;
 using Pipeline.CustomMiddleware.Middleware;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ПРИКЛАД 04. Власні middleware: два стилі
+// ПРИКЛАД 04. Власні middleware як класи — два стилі
 //
-//   1. RequestTimingMiddleware  — «за конвенцією» (клас без інтерфейсу).
-//   2. CorrelationIdMiddleware  — на основі IMiddleware (factory-based, Scoped).
+//   1. RequestTimingMiddleware  — «за конвенцією» (звичайний клас).
+//   2. CorrelationIdMiddleware  — на основі інтерфейсу IMiddleware.
 //
-// Плюс: інлайн-middleware через app.Use(...) і чому важливий порядок.
+// Коли middleware треба перевикористовувати чи тестувати — його виносять у клас.
 // ─────────────────────────────────────────────────────────────────────────────
 
 var builder = WebApplication.CreateBuilder(args);
 
-// IMiddleware-реалізацію ОБОВ'ЯЗКОВО реєструвати в DI.
-// Convention-based (RequestTiming) реєструвати не треба — UseMiddleware<T> сам
-// створить екземпляр через ActivatorUtilities.
+// ======================================================================
+//  1 · СЕРВІСИ
+// ======================================================================
+// IMiddleware-реалізацію реєструвати ОБОВ'ЯЗКОВО. Convention-based — ні.
 builder.Services.AddScoped<CorrelationIdMiddleware>();
+builder.Services.AddApiDocs();
 
 var app = builder.Build();
 
-// Порядок реєстрації = порядок виконання на вході.
-// CorrelationId ставимо раніше — щоб час-логи вже мали id у своєму scope.
+// ======================================================================
+//  2 · КОНВЕЄР
+// ======================================================================
+app.MapApiDocs();
+
+// Порядок реєстрації = порядок виконання. UseXxx() — метод-розширення, що
+// ховає app.UseMiddleware<T>() за зрозумілою назвою (як UseRouting, UseCors).
 app.UseCorrelationId();
 app.UseRequestTiming();
 
-// Інлайн-middleware: годиться для дрібниць, які не варто виносити в клас.
+// Третій варіант — інлайн, прямо тут. Годиться для дрібниць.
 app.Use(async (context, next) =>
 {
-    if (context.Request.Query.ContainsKey("boom"))
-        throw new InvalidOperationException("Навмисний виняток для демонстрації (див. приклад 05).");
-
+    context.Response.Headers["X-Powered-By"] = "AspNet-Basics";
     await next(context);
 });
 
-app.MapGet("/", (HttpContext http) => Results.Ok(new
+// ======================================================================
+//  3 · ЗАПИТИ
+// ======================================================================
+app.MapGet("/", (HttpContext http) => new
 {
-    Message = "Приклад 04. Дивіться заголовки відповіді: X-Correlation-ID, Server-Timing.",
-    CorrelationId = http.Items["CorrelationId"],
-}));
-
-// Ендпоінт, що штучно «гальмує» — щоб побачити Server-Timing.
-app.MapGet("/slow", async () =>
-{
-    await Task.Delay(Random.Shared.Next(80, 250));
-    return Results.Text("Готово (з випадковою затримкою).");
+    message = "Дивіться заголовки відповіді: X-Correlation-ID, X-Powered-By.",
+    correlationId = http.Items["CorrelationId"],
 });
 
 app.Run();

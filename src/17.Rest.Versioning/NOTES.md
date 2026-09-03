@@ -44,14 +44,15 @@ endpoint) — не breaking, версію піднімати не треба. В
 
 ## Спробуйте самі
 
-1. `GET /v1/products` — «плоский» товар. `GET /v2/products` — категорія розкрита,
-   ціна як `{amount, currency}`.
-2. `GET /products?api-version=2.0` — та сама відповідь v2 без сегмента в URL.
+1. `GET /v1/products` — товар «як є». `GET /v2/products` — замість `categoryId`
+   поле `category` (назва).
+2. `GET /products?api-version=2.0` — версія з query, без сегмента в URL.
 3. `GET /products` із заголовком `X-Api-Version: 2.0`.
 4. `GET /products` із `Accept: application/json;v=2.0`.
 5. Подивіться заголовки відповіді: `api-supported-versions`.
-6. `GET /v1/legacy-report` → заголовок `api-deprecated-versions: 1.0`.
-7. `GET /v3/products` → `400` `UnsupportedApiVersion`.
+6. `GET /v1/report` → заголовок `api-deprecated-versions: 1.0`.
+7. `GET /v3/products` → `404` (такого маршруту немає; для незнайомої версії в
+   query/заголовку буде `400 UnsupportedApiVersion`).
 
 ## Посилання
 

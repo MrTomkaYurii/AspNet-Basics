@@ -13,4 +13,14 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!--
+      Пакети для спільного помічника ApiDocs (див. ApiDocs.cs): один OpenAPI-документ
+      і два переглядачі поверх нього. Через посилання на Common їх отримують УСІ приклади.
+    -->
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.17.2" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 @host = http://localhost:5017
 
-### v1 — плоский товар (сегмент URL)
+### v1 — товар «як є» (сегмент URL)
 GET {{host}}/v1/products
 
 ### v2 — змінений контракт (сегмент URL)
@@ -18,7 +18,7 @@ GET {{host}}/products
 Accept: application/json;v=2.0
 
 ### Застаріла версія → заголовок api-deprecated-versions
-GET {{host}}/v1/legacy-report
+GET {{host}}/v1/report
 
 ### Неіснуюча версія → 400
 GET {{host}}/v3/products

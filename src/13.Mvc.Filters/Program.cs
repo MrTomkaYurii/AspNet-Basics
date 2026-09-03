@@ -1,36 +1,43 @@
+using Common;
 using Mvc.Filters.Filters;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 13. Фільтри MVC
 //
-// Фільтри — це «конвеєр усередині конвеєра», специфічний для MVC. На відміну від
+// Фільтри — «конвеєр усередині конвеєра», специфічний для MVC. На відміну від
 // middleware, вони знають про обрану дію, її аргументи та результат.
 //
-// Порядок типів фільтрів (зовні → всередину):
-//
-//   Authorization  →  Resource  →  [model binding]  →  Action  →  [дія]
-//                                                          ↓
-//   Result  ←  ...  ←  Exception (огортає Action + дію)
+// Порядок типів (зовні → всередину):
+//   Authorization → Resource → [model binding] → Action → [ДІЯ] → Result
+//   Exception огортає Action + саму дію.
 // ─────────────────────────────────────────────────────────────────────────────
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(options =>
-{
-    // ГЛОБАЛЬНИЙ фільтр — для всіх контролерів. Тут просто вимикаємо стандартний
-    // ProblemDetails-фільтр не будемо; лишаємо як приклад місця реєстрації.
-    // options.Filters.Add<SomeGlobalFilter>();
-});
+// ======================================================================
+//  1 · СЕРВІСИ
+// ======================================================================
+builder.Services.AddControllers();
 
 // Фільтри з залежностями реєструють у DI (для [ServiceFilter]).
-builder.Services.AddScoped<TimingResourceFilter>();
-builder.Services.AddScoped<LoggingActionFilter>();
-builder.Services.AddScoped<EnvelopeResultFilter>();
+builder.Services.AddScoped<DemoResourceFilter>();
+builder.Services.AddScoped<DemoActionFilter>();
+builder.Services.AddScoped<DemoResultFilter>();
 builder.Services.AddScoped<DemoExceptionFilter>();
+
+builder.Services.AddApiDocs();
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Text("Приклад 13. GET /api/demo/ok, /api/demo/boom, /api/demo/slow"));
+// ======================================================================
+//  2 · КОНВЕЄР
+// ======================================================================
+app.MapApiDocs();
+
+// ======================================================================
+//  3 · ЗАПИТИ
+// ======================================================================
+app.MapGet("/", () => "Приклад 13. GET /api/demo/ok, /api/demo/boom");
 app.MapControllers();
 
 app.Run();

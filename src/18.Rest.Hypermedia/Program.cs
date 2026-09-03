@@ -4,148 +4,102 @@ using Common.Domain;
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 18. REST: гіпермедіа (HATEOAS)
 //
-// HATEOAS = Hypermedia As The Engine Of Application State.
-// Ідея: клієнт не «зашиває» URL-и, а йде за посиланнями, які сервер віддає у
-// відповіді. Набір доступних посилань залежить від СТАНУ ресурсу — сервер
-// підказує, що можна зробити далі.
-//
-// Це рівень 3 «моделі зрілості Річардсона» (див. NOTES).
+// Ідея: клієнт не «зашиває» URL-и, а йде за посиланнями (`_links`), які сервер
+// повертає у відповіді. Набір посилань залежить від СТАНУ ресурсу — сервер
+// підказує, що можна зробити далі. Це рівень 3 моделі зрілості Річардсона.
 // ─────────────────────────────────────────────────────────────────────────────
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ======================================================================
+//  1 · СЕРВІСИ
+// ======================================================================
 builder.Services.AddCatalog();
 builder.Services.AddSingleton<Cart>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<LinkBuilder>();
+builder.Services.AddApiDocs();
+
 var app = builder.Build();
 
-// Точка входу: клієнт починає звідси й далі рухається за _links.
-app.MapGet("/", (LinkBuilder link) => Results.Ok(new
-{
-    service = "Catalog API",
-    _links = new
-    {
-        self = link.To("/"),
-        products = link.To("/products"),
-        cart = link.To("/cart"),
-    },
-}));
+// ======================================================================
+//  2 · КОНВЕЄР
+// ======================================================================
+app.MapApiDocs();
 
-// Колекція: посилання на пагінацію + self для кожного елемента.
-app.MapGet("/products", (ICatalog catalog, LinkBuilder link) => Results.Ok(new
+// ======================================================================
+//  3 · ЗАПИТИ
+// ======================================================================
+
+// Точка входу: далі рухаємось лише за _links.
+app.MapGet("/", () => new { _links = new { products = "/products", cart = "/cart" } });
+
+// Колекція: у кожного елемента є self-посилання.
+app.MapGet("/products", (ICatalog catalog) => new
 {
     items = catalog.GetProducts().Select(p => new
     {
         p.Id, p.Name, p.Price,
-        _links = new { self = link.To($"/products/{p.Id}") },
+        _links = new { self = $"/products/{p.Id}" },
     }),
-    _links = new { self = link.To("/products") },
-}));
-
-// Елемент: посилання на пов'язані ресурси та можливі дії.
-app.MapGet("/products/{id:int}", (int id, ICatalog catalog, LinkBuilder link) =>
-{
-    if (catalog.FindProduct(id) is not { } p) return Results.NotFound();
-    return Results.Ok(new
-    {
-        p.Id, p.Name, p.Description, p.Price, p.Sku,
-        _links = new
-        {
-            self = link.To($"/products/{p.Id}"),
-            category = link.To($"/categories/{p.CategoryId}"),
-            addToCart = link.Action($"/cart/items", "POST"),
-        },
-    });
 });
 
-app.MapGet("/categories/{id:int}", (int id, ICatalog catalog, LinkBuilder link) =>
-    catalog.FindCategory(id) is { } c
-        ? Results.Ok(new { c.Id, c.Name, c.Slug, _links = new { self = link.To($"/categories/{c.Id}") } })
+// Елемент: посилання на пов'язані ресурси й можливі дії.
+app.MapGet("/products/{id:int}", (int id, ICatalog catalog) =>
+    catalog.FindProduct(id) is { } p
+        ? Results.Ok(new
+        {
+            p.Id, p.Name, p.Price,
+            _links = new
+            {
+                self = $"/products/{id}",
+                addToCart = new { href = "/cart/items", method = "POST" },
+            },
+        })
         : Results.NotFound());
 
 // ── Кошик: доступні дії ЗАЛЕЖАТЬ ВІД СТАНУ ────────────────────────────────
-app.MapGet("/cart", (Cart cart, ICatalog catalog, LinkBuilder link) => Results.Ok(cart.Represent(catalog, link)));
+app.MapGet("/cart", (Cart cart) => cart.View());
 
-app.MapPost("/cart/items", (AddItem body, Cart cart, ICatalog catalog, LinkBuilder link) =>
+app.MapPost("/cart/items", (AddItem body, Cart cart, ICatalog catalog) =>
 {
     if (catalog.FindProduct(body.ProductId) is null)
-        return Results.ValidationProblem(new Dictionary<string, string[]>
-        {
-            ["productId"] = ["Такого товару немає."],
-        });
+        return Results.BadRequest("Такого товару немає.");
 
-    cart.Add(body.ProductId, body.Quantity <= 0 ? 1 : body.Quantity);
-    return Results.Ok(cart.Represent(catalog, link));
+    cart.Add(body.ProductId);
+    return Results.Ok(cart.View());
 });
 
-app.MapPost("/cart/checkout", (Cart cart, ICatalog catalog, LinkBuilder link) =>
+app.MapPost("/cart/checkout", (Cart cart) =>
 {
     if (cart.IsEmpty)
-        return Results.Problem("Кошик порожній — оформлення недоступне.", statusCode: StatusCodes.Status409Conflict);
+        return Results.Conflict("Кошик порожній — оформлення недоступне.");
 
-    var orderId = cart.Checkout();
-    return Results.Ok(new
-    {
-        orderId,
-        status = "confirmed",
-        _links = new { self = link.To($"/orders/{orderId}"), cart = link.To("/cart") },
-    });
+    cart.Clear();
+    return Results.Ok(new { status = "confirmed" });
 });
 
 app.Run();
 
-// ─────────────────────────────────────────────────────────────────────────────
+record AddItem(int ProductId);
 
-/// <summary>Будує абсолютні URL відносно поточного запиту.</summary>
-public sealed class LinkBuilder(IHttpContextAccessor accessor)
-{
-    private string Base
-    {
-        get
-        {
-            var r = accessor.HttpContext!.Request;
-            return $"{r.Scheme}://{r.Host}";
-        }
-    }
-
-    public object To(string path) => new { href = Base + path };
-    public object Action(string path, string method) => new { href = Base + path, method };
-}
-
-public sealed record AddItem(int ProductId, int Quantity);
-
-/// <summary>Демо-кошик (один на застосунок). Ключове — метод Represent,
-/// що віддає РІЗНІ _links залежно від того, порожній кошик чи ні.</summary>
+/// <summary>Демо-кошик (один на застосунок). Ключове — метод View: різні _links
+/// залежно від того, порожній кошик чи ні.</summary>
 public sealed class Cart
 {
-    private readonly Dictionary<int, int> _items = new();
-    private int _lastOrderId;
+    private readonly List<int> _productIds = [];
 
-    public bool IsEmpty => _items.Count == 0;
-    public void Add(int productId, int qty) => _items[productId] = _items.GetValueOrDefault(productId) + qty;
-    public int Checkout() { _items.Clear(); return ++_lastOrderId + 1000; }
+    public bool IsEmpty => _productIds.Count == 0;
+    public void Add(int productId) => _productIds.Add(productId);
+    public void Clear() => _productIds.Clear();
 
-    public object Represent(ICatalog catalog, LinkBuilder link)
+    public object View()
     {
-        var lines = _items.Select(kv => new
-        {
-            productId = kv.Key,
-            name = catalog.FindProduct(kv.Key)?.Name,
-            quantity = kv.Value,
-            _links = new { product = link.To($"/products/{kv.Key}") },
-        }).ToArray();
-
-        var total = _items.Sum(kv => (catalog.FindProduct(kv.Key)?.Price ?? 0) * kv.Value);
-
-        // Стан → набір дій. Порожній кошик не пропонує checkout.
         var links = new Dictionary<string, object>
         {
-            ["self"] = link.To("/cart"),
-            ["addItem"] = link.Action("/cart/items", "POST"),
+            ["addItem"] = new { href = "/cart/items", method = "POST" },
         };
         if (!IsEmpty)
-            links["checkout"] = link.Action("/cart/checkout", "POST");
+            links["checkout"] = new { href = "/cart/checkout", method = "POST" };
 
-        return new { lines, total, _links = links };
+        return new { productIds = _productIds, _links = links };
     }
 }

@@ -3,90 +3,52 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Mvc.Filters.Filters;
 
-// Кожен фільтр пише свій слід у список context.HttpContext.Items["trace"],
-// щоб у відповіді було видно РЕАЛЬНИЙ порядок виконання.
-
-file static class TraceExtensions
+// Спільний «журнал» кроків цього запиту — щоб у відповіді було видно РЕАЛЬНИЙ
+// порядок виконання фільтрів.
+static class Steps
 {
-    public static void Trace(this FilterContext ctx, string step)
-    {
-        var list = (List<string>)(ctx.HttpContext.Items["trace"] ??= new List<string>());
-        list.Add(step);
-    }
-    public static void Trace(this ExceptionContext ctx, string step)
-    {
-        var list = (List<string>)(ctx.HttpContext.Items["trace"] ??= new List<string>());
-        list.Add(step);
-    }
+    public static List<string> Of(HttpContext http) =>
+        (List<string>)(http.Items["steps"] ??= new List<string>());
 }
 
-/// <summary>Resource filter — найзовнішній (після Authorization). Огортає навіть
-/// model binding. Тут вимірюємо час і можемо зробити кешування/short-circuit.</summary>
-public sealed class TimingResourceFilter : IResourceFilter
+/// <summary>Resource filter — після Authorization, ДО model binding. Кеш, short-circuit.</summary>
+public sealed class DemoResourceFilter : IResourceFilter
 {
-    public void OnResourceExecuting(ResourceExecutingContext context)
-    {
-        context.HttpContext.Items["sw"] = System.Diagnostics.Stopwatch.StartNew();
-        context.Trace("1: ResourceFilter.Executing");
-    }
-
-    public void OnResourceExecuted(ResourceExecutedContext context)
-    {
-        var sw = (System.Diagnostics.Stopwatch)context.HttpContext.Items["sw"]!;
-        sw.Stop();
-        context.HttpContext.Response.Headers["X-Elapsed-Ms"] = sw.ElapsedMilliseconds.ToString();
-        context.Trace("7: ResourceFilter.Executed");
-    }
+    public void OnResourceExecuting(ResourceExecutingContext c) => Steps.Of(c.HttpContext).Add("resource: executing");
+    public void OnResourceExecuted(ResourceExecutedContext c) => Steps.Of(c.HttpContext).Add("resource: executed");
 }
 
-/// <summary>Action filter — навколо самого методу дії, вже зі зв'язаними аргументами.</summary>
-public sealed class LoggingActionFilter(ILogger<LoggingActionFilter> logger) : IActionFilter
+/// <summary>Action filter — навколо методу дії, вже зі зв'язаними аргументами.</summary>
+public sealed class DemoActionFilter : IActionFilter
 {
-    public void OnActionExecuting(ActionExecutingContext context)
-    {
-        logger.LogInformation("Виклик {Action}, аргументів: {Count}",
-            context.ActionDescriptor.DisplayName, context.ActionArguments.Count);
-        context.Trace("3: ActionFilter.Executing");
-    }
-
-    public void OnActionExecuted(ActionExecutedContext context)
-        => context.Trace("5: ActionFilter.Executed");
+    public void OnActionExecuting(ActionExecutingContext c) => Steps.Of(c.HttpContext).Add("action: executing");
+    public void OnActionExecuted(ActionExecutedContext c) => Steps.Of(c.HttpContext).Add("action: executed");
 }
 
-/// <summary>Result filter — навколо виконання результату (серіалізації відповіді).</summary>
-public sealed class EnvelopeResultFilter : IResultFilter
+/// <summary>Result filter — навколо виконання IActionResult. Тут — огортаємо відповідь у «конверт».</summary>
+public sealed class DemoResultFilter : IResultFilter
 {
-    public void OnResultExecuting(ResultExecutingContext context)
+    public void OnResultExecuting(ResultExecutingContext c)
     {
-        context.Trace("6: ResultFilter.Executing");
+        Steps.Of(c.HttpContext).Add("result: executing");
+        if (c.Result is ObjectResult obj)
+            obj.Value = new { data = obj.Value, steps = Steps.Of(c.HttpContext) };
+    }
 
-        // Приклад втручання: огортаємо ObjectResult у «конверт».
-        if (context.Result is ObjectResult { Value: not null } obj)
+    public void OnResultExecuted(ResultExecutedContext c) { }
+}
+
+/// <summary>Exception filter — ловить необроблені винятки з дії та action-фільтрів.</summary>
+public sealed class DemoExceptionFilter : IExceptionFilter
+{
+    public void OnException(ExceptionContext c)
+    {
+        var steps = Steps.Of(c.HttpContext);
+        steps.Add("exception filter");
+        c.Result = new ObjectResult(new { error = c.Exception.Message, steps })
         {
-            obj.Value = new
-            {
-                data = obj.Value,
-                trace = context.HttpContext.Items["trace"],
-            };
-        }
-    }
-
-    public void OnResultExecuted(ResultExecutedContext context) { }
-}
-
-/// <summary>Exception filter — ловить необроблені винятки з дії та фільтрів дії.</summary>
-public sealed class DemoExceptionFilter(IHostEnvironment env) : IExceptionFilter
-{
-    public void OnException(ExceptionContext context)
-    {
-        context.Trace("X: ExceptionFilter");
-        context.Result = new ObjectResult(new
-        {
-            error = "Оброблено ExceptionFilter-ом",
-            type = context.Exception.GetType().Name,
-            detail = env.IsDevelopment() ? context.Exception.Message : null,
-        })
-        { StatusCode = StatusCodes.Status500InternalServerError };
-        context.ExceptionHandled = true;
+            StatusCode = StatusCodes.Status500InternalServerError,
+        };
+        c.ExceptionHandled = true;
     }
 }

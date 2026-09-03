@@ -6,7 +6,7 @@ GET {{host}}/
 ### Колекція з self-посиланнями
 GET {{host}}/products
 
-### Елемент: self, category, addToCart
+### Елемент: self + addToCart
 GET {{host}}/products/1
 
 ### Порожній кошик — checkout у _links відсутній
@@ -16,7 +16,7 @@ GET {{host}}/cart
 POST {{host}}/cart/items
 Content-Type: application/json
 
-{ "productId": 1, "quantity": 2 }
+{ "productId": 1 }
 
 ### Оформлення
 POST {{host}}/cart/checkout

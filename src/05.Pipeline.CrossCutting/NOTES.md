@@ -57,11 +57,10 @@ Same-origin policy браузера блокує крос-доменні зап�
 
 1. `dotnet run` (Development) → `GET /api/fail` — сторінка розробника зі стеком.
 2. `dotnet run --launch-profile "Production-like"` → `GET /api/fail` —
-   тепер `application/problem+json`, без стека, з `traceId` та `instance`.
+   тепер `application/problem+json`, без стека.
 3. `GET /api/missing` → 404 із текстовим тілом від `UseStatusCodePages`.
-4. `GET /api/teapot` → рукотворний Problem Details зі статусом 418.
-5. Відкрийте `http://localhost:5005/` — це `wwwroot/index.html`.
-6. CORS: `curl -H "Origin: https://example.com" -i http://localhost:5005/api/data`
+4. Відкрийте `http://localhost:5005/` — це `wwwroot/index.html`.
+5. CORS: `curl -H "Origin: https://example.com" -i http://localhost:5005/api/data`
    → є `Access-Control-Allow-Origin`. З `Origin: https://evil.com` — немає.
 
 ## Посилання

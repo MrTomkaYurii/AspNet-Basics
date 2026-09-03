@@ -1,41 +1,40 @@
+using Common;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 15. REST: представлення ресурсу
 //
 //   • Content negotiation — один ресурс, різні формати (JSON / XML) за Accept.
-//   • Налаштування серіалізації System.Text.Json.
 //   • Умовні запити: ETag + If-None-Match (кеш) та If-Match (оптимістичне блокування).
-//   • Заголовки кешування (Cache-Control).
-//   • PATCH: JSON Patch (RFC 6902) та JSON Merge Patch (RFC 7386).
+//   • PATCH: JSON Patch (RFC 6902).
 //
-// Використовуємо контролери — content negotiation це механізм форматерів MVC.
+// На контролерах — content negotiation це механізм форматерів MVC.
 // ─────────────────────────────────────────────────────────────────────────────
 
-using Common;
-
 var builder = WebApplication.CreateBuilder(args);
+
+// ======================================================================
+//  1 · СЕРВІСИ
+// ======================================================================
 builder.Services.AddCatalog();
 
 builder.Services
-    .AddControllers(options =>
-    {
-        // Якщо клієнт просить формат, якого ми не вміємо, — 406 замість «мовчки JSON».
-        options.ReturnHttpNotAcceptable = true;
-    })
-    // Додає XML-форматери (input + output) поряд із JSON.
-    .AddXmlSerializerFormatters()
-    .AddJsonOptions(o =>
-    {
-        // Налаштування System.Text.Json для всього застосунку.
-        o.JsonSerializerOptions.WriteIndented = true;
-        o.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-        o.JsonSerializerOptions.DefaultIgnoreCondition =
-            System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-    });
+    .AddControllers(o => o.ReturnHttpNotAcceptable = true)   // просять невідомий формат → 406
+    .AddXmlSerializerFormatters();                           // XML поряд із JSON
+
+builder.Services.AddApiDocs();
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Text(
-    "Приклад 15. GET /products/1 (спробуйте Accept: application/xml), ETag, If-Match, PATCH."));
+// ======================================================================
+//  2 · КОНВЕЄР
+// ======================================================================
+app.MapApiDocs();
 
+// ======================================================================
+//  3 · ЗАПИТИ
+// ======================================================================
+// Обробники — у ProductsController (тека Controllers/).
+app.MapGet("/", () => "Приклад 15. GET /products/1 (спробуйте Accept: application/xml), ETag, If-Match, PATCH.");
 app.MapControllers();
+
 app.Run();

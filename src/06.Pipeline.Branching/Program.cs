@@ -1,74 +1,64 @@
+using Common;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 06. Розгалуження конвеєра: Map / MapWhen / UseWhen
 //
-// Іноді частині запитів потрібен інший набір middleware. Є три інструменти:
-//
-//   app.Map(path, branch)       — гілка за префіксом шляху. ТЕРМІНАЛЬНА
-//                                 (назад у основний конвеєр не повертається).
-//                                 Обрізає PathBase: усередині гілки Path вже без префікса.
-//
-//   app.MapWhen(predicate, br)  — те саме, але умова довільна (не лише шлях).
-//                                 Теж термінальна, PathBase НЕ чіпає.
-//
-//   app.UseWhen(predicate, br)  — умовна ВСТАВКА middleware. Якщо гілка не зробила
-//                                 short-circuit, керування ПОВЕРТАЄТЬСЯ в основний конвеєр.
+//   app.Map(path, branch)      — гілка за префіксом шляху. ТЕРМІНАЛЬНА (назад не
+//                                повертається). Обрізає префікс: усередині Path без нього.
+//   app.MapWhen(pred, branch)  — те саме, але умова довільна. Теж термінальна.
+//   app.UseWhen(pred, branch)  — умовна ВСТАВКА. Якщо гілка не зробила short-circuit,
+//                                керування ПОВЕРТАЄТЬСЯ в основний конвеєр.
 // ─────────────────────────────────────────────────────────────────────────────
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ======================================================================
+//  1 · СЕРВІСИ
+// ======================================================================
+builder.Services.AddApiDocs();
+
 var app = builder.Build();
 
-// Спільний middleware — виконується для ВСІХ запитів (він перед розгалуженнями).
-app.Use(async (ctx, next) =>
-{
-    ctx.Response.Headers["X-Pipeline"] = "main";
-    await next(ctx);
-});
+// ======================================================================
+//  2 · КОНВЕЄР + РОЗГАЛУЖЕННЯ
+// ======================================================================
+app.MapApiDocs();
 
-// ── 1. Map: окрема під-програма на /admin ──────────────────────────────────
+// Map: окрема під-програма на /admin. Усередині гілки Path вже БЕЗ "/admin",
+// а PathBase = "/admin".
 app.Map("/admin", admin =>
-{
-    // Власний конвеєр цієї гілки.
-    admin.Use(async (ctx, next) =>
-    {
-        // Усередині гілки Path вже БЕЗ "/admin".
-        if (ctx.Request.Query["token"] != "root")
-        {
-            ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
-            await ctx.Response.WriteAsync("Гілка /admin: потрібен ?token=root");
-            return;
-        }
-        await next(ctx);
-    });
-
     admin.Run(async ctx =>
-        await ctx.Response.WriteAsync($"Адмінка. Внутрішній Path = '{ctx.Request.Path}', PathBase = '{ctx.Request.PathBase}'"));
-});
+        await ctx.Response.WriteAsync($"Адмінка. Path='{ctx.Request.Path}', PathBase='{ctx.Request.PathBase}'")));
 
-// ── 2. MapWhen: гілка за довільною умовою (тут — заголовок) ─────────────────
+// MapWhen: гілка за довільною умовою — тут за заголовком.
 app.MapWhen(
     ctx => ctx.Request.Headers.ContainsKey("X-Legacy-Client"),
-    legacy => legacy.Run(async ctx =>
-        await ctx.Response.WriteAsync("Гілка для застарілих клієнтів (визначено за заголовком X-Legacy-Client).")));
+    legacy => legacy.Run(ctx => ctx.Response.WriteAsync("Гілка для застарілих клієнтів.")));
 
-// ── 3. UseWhen: умовна вставка, що повертається в основний конвеєр ──────────
+// UseWhen: middleware лише для /api/*. Якщо ключ є — керування ПОВЕРТАЄТЬСЯ
+// в основні endpoint-и нижче; якщо ні — short-circuit.
 app.UseWhen(
     ctx => ctx.Request.Path.StartsWithSegments("/api"),
     api => api.Use(async (ctx, next) =>
     {
-        // Перевірка ключа лише для /api/*.
         if (ctx.Request.Headers["X-Api-Key"] != "secret")
         {
             ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            await ctx.Response.WriteAsJsonAsync(new { error = "потрібен X-Api-Key для /api/*" });
-            return;   // short-circuit — у основний конвеєр НЕ повертаємось
+            await ctx.Response.WriteAsync("Потрібен X-Api-Key для /api/*");
+            return;
         }
         ctx.Response.Headers["X-Api-Auth"] = "ok";
-        await next(ctx);   // умову виконано → повертаємось у спільні endpoint-и нижче
+        await next(ctx);
     }));
 
-// ── Спільні endpoint-и (доступні і для /api/*, бо UseWhen повертає керування) ─
+// ======================================================================
+//  3 · ЗАПИТИ
+// ======================================================================
 app.MapGet("/", () => "Приклад 06. Спробуйте /admin, /api/ping, заголовок X-Legacy-Client.");
-app.MapGet("/api/ping", () => Results.Ok(new { pong = true }));
-app.MapGet("/api/whoami", (HttpContext http) => Results.Ok(new { apiAuth = http.Response.Headers["X-Api-Auth"].ToString() }));
+
+// /api/* endpoint-и доступні, бо UseWhen повернув керування сюди.
+app.MapGet("/api/ping", () => "pong");
+app.MapGet("/api/whoami", (HttpContext http) =>
+    $"X-Api-Auth = {http.Response.Headers["X-Api-Auth"]}");
 
 app.Run();

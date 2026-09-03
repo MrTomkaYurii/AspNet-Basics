@@ -6,14 +6,13 @@ GET {{host}}/public
 ### Без токена → 401
 GET {{host}}/me
 
-### Отримати токен (alice = admin + premium, 30 років)
+### Отримати токен (alice = admin)
 # @name login
 POST {{host}}/token
 Content-Type: application/json
 
 { "username": "alice", "password": "password" }
 
-### Використати токен
 @token = {{login.response.body.access_token}}
 
 ### Claims автентифікованого користувача
@@ -24,15 +23,7 @@ Authorization: Bearer {{token}}
 GET {{host}}/admin
 Authorization: Bearer {{token}}
 
-### Claim subscription=premium
-GET {{host}}/premium
-Authorization: Bearer {{token}}
-
-### Політика age >= 18
-GET {{host}}/adult
-Authorization: Bearer {{token}}
-
-### Токен bob (user, 16) — /admin і /adult дадуть 403
+### Токен bob (роль user) — /admin дасть 403
 POST {{host}}/token
 Content-Type: application/json
 

@@ -3,8 +3,8 @@
 ### route → id
 GET {{host}}/bind/route/42
 
-### query, зокрема масив і DateOnly
-GET {{host}}/bind/query?q=hub&page=2&tags=new&tags=sale&since=2026-01-01
+### query, зокрема масив
+GET {{host}}/bind/query?q=hub&page=2&tags=new&tags=sale
 
 ### header (обов'язковий)
 GET {{host}}/bind/header
@@ -13,23 +13,17 @@ X-Tenant: acme
 ### header відсутній → 400
 GET {{host}}/bind/header
 
-### [AsParameters]
-GET {{host}}/bind/as-parameters/2?search=key&pageSize=1
+### [AsParameters]: page з маршруту, term/pageSize з query
+GET {{host}}/bind/search/2?term=key&pageSize=5
 
-### власний тип із TryParse
-GET {{host}}/bind/geo/50.45,30.52
-
-### не парситься → 400
-GET {{host}}/bind/geo/oops
-
-### вбудована валідація → 400 ValidationProblem
-POST {{host}}/validate/auto
+### Валідація за DataAnnotations → 400 ValidationProblem
+POST {{host}}/validate
 Content-Type: application/json
 
-{ "name": "x", "price": 0, "categoryId": 1, "sku": "bad" }
+{ "name": "x", "price": 0, "categoryId": 1 }
 
-### крос-польова валідація у фільтрі
-POST {{host}}/validate/filter
+### Валідація в endpoint filter (крос-польова) → 400
+POST {{host}}/validate
 Content-Type: application/json
 
-{ "name": "Valid Name", "price": 10, "categoryId": 99, "sku": "ACC-OK-1" }
+{ "name": "Коректна назва", "price": 10, "categoryId": 99 }

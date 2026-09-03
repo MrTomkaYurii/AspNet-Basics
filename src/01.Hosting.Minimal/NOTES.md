@@ -45,11 +45,11 @@ app.Run();                                          // 2. ЗАПУСКАЄМО (
 
 ## Спробуйте самі
 
-1. `dotnet run` → `GET /info` → подивіться `EnvironmentName`.
-2. Запустіть із `ASPNETCORE_ENVIRONMENT=Production` і порівняйте логи.
-3. `GET /shutdown` або `Ctrl+C` — простежте порядок повідомлень у консолі.
-4. Задайте `Greeting__Message=Hello` у змінних середовища — переконайтесь, що
-   `GET /` віддає нове значення (конфігурація перекриває код).
+1. `dotnet run` → `GET /env` → подивіться `EnvironmentName`.
+2. `GET /products` — сервіс `ICatalog` прийшов із DI-контейнера.
+3. `GET /shutdown` (або `Ctrl+C`) — простежте порядок повідомлень у консолі:
+   «Зупинка…» → «зупинено».
+4. Запустіть із `ASPNETCORE_ENVIRONMENT=Production` — `GET /env` покаже інше середовище.
 
 ## Посилання
 

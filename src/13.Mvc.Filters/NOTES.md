@@ -54,12 +54,11 @@ Authorization filter   — найраніше; пускає/не пускає (�
 
 ## Спробуйте самі
 
-1. `GET /api/demo/ok` → у полі `trace` видно фактичний порядок:
-   `ResourceFilter.Executing → ActionFilter.Executing → Action body →
-   ActionFilter.Executed → ResultFilter.Executing → ResourceFilter.Executed`.
-2. `GET /api/demo/boom` → `500` від `ExceptionFilter`, у `trace` є крок `X`.
-   Зверніть увагу: `ResultFilter` для нормального результату не спрацював.
-3. `GET /api/demo/slow` → заголовок `X-Elapsed-Ms` від `ResourceFilter`.
+1. `GET /api/demo/ok` → у полі `steps` видно фактичний порядок:
+   `resource: executing → action: executing → action: executed →
+   result: executing → resource: executed`.
+2. `GET /api/demo/boom` → `500` від `ExceptionFilter`, у `steps` є `exception filter`.
+   Зверніть увагу: `result: executing` для нормального результату вже не буде.
 
 ## Посилання
 

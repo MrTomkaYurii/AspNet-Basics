@@ -46,12 +46,12 @@ builder.Services.AddValidation();
 
 ## Спробуйте самі
 
-1. `GET /bind/route/42`, `GET /bind/query?q=hub&page=2&tags=new&tags=sale&since=2026-01-01`.
+1. `GET /bind/route/42`, `GET /bind/query?q=hub&page=2&tags=new&tags=sale`.
 2. `GET /bind/header` із заголовком `X-Tenant: acme`; без нього → `400`.
-3. `GET /bind/as-parameters/2?search=key&pageSize=1`.
-4. `GET /bind/geo/50.45,30.52` — власний `TryParse`. `GET /bind/geo/oops` → `400`.
-5. `POST /validate/auto` з поганим тілом → `400 ValidationProblem` (жодного коду валідації в хендлері).
-6. `POST /validate/filter` з `categoryId: 99` → помилка від крос-польового правила у фільтрі.
+3. `GET /bind/search/2?term=key&pageSize=5` — `[AsParameters]` з route + query.
+4. `POST /validate` з `"name": "x", "price": 0` → `400 ValidationProblem`
+   (жодного коду валідації в хендлері — це `AddValidation()`).
+5. `POST /validate` з `"categoryId": 99` → `400` від endpoint filter (крос-польове правило).
 
 ## Посилання
 

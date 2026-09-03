@@ -39,7 +39,7 @@
 1. `dotnet run` → `GET /env` (Development) і `GET /config` → `ExperimentalSearch: true`.
 2. `dotnet run --launch-profile "Production-like"` → ті самі запити:
    середовище `Production`, `ExperimentalSearch: false` (перекрито
-   `appsettings.Production.json`), а `/dev/routes` зникає (404).
+   `appsettings.Production.json`), а `/dev/ping` зникає (404).
 3. `GET /server` — побачите `KestrelServer` і реальні адреси прослуховування.
 4. Спробуйте `ASPNETCORE_URLS=http://localhost:5555 dotnet run` — порт зміниться,
    попри `launchSettings.json`.

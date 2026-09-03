@@ -1,14 +1,8 @@
 @host = http://localhost:5004
 
-### Головна — подивіться заголовки X-Correlation-ID та Server-Timing
+### Головна — подивіться заголовки X-Correlation-ID та X-Powered-By, і лог із часом
 GET {{host}}/
 
 ### Передаємо власний correlation id — сервер його підхопить
 GET {{host}}/
 X-Correlation-ID: my-trace-1
-
-### Випадкова затримка — Server-Timing змінюється
-GET {{host}}/slow
-
-### Навмисний виняток (обробку помилок додає приклад 05)
-GET {{host}}/?boom=1

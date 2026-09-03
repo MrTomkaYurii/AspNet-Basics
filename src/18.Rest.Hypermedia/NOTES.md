@@ -43,12 +43,10 @@
 
 1. `GET /` — точка входу. Далі рухайтесь **тільки** за `_links`, не вгадуючи URL.
 2. `GET /products` → у кожного елемента є `_links.self`; перейдіть за одним.
-3. `GET /products/1` → `_links`: `self`, `category`, `addToCart`.
+3. `GET /products/1` → `_links`: `self`, `addToCart`.
 4. `GET /cart` (порожній) → у `_links` **немає** `checkout`.
-5. `POST /cart/items` `{ "productId": 1, "quantity": 2 }` → тепер у `_links`
-   з'явився `checkout`.
-6. `POST /cart/checkout` → підтвердження + посилання на `order`. `GET /cart` знову
-   порожній, `checkout` зник.
+5. `POST /cart/items` `{ "productId": 1 }` → тепер у `_links` з'явився `checkout`.
+6. `POST /cart/checkout` → підтвердження. `GET /cart` знову порожній, `checkout` зник.
 
 ## Посилання
 

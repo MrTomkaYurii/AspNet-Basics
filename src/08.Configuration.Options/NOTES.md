@@ -11,15 +11,15 @@
 ### Порядок джерел (кожне наступне перекриває попередні)
 1. `appsettings.json`
 2. `appsettings.{Environment}.json`
-3. User Secrets (тільки Development) — `dotnet user-secrets set "Catalog:Currency" "EUR"`
-4. Змінні середовища — роздільник `__`: `Catalog__Currency=EUR`
-5. Аргументи командного рядка — `--Catalog:Currency=EUR`
+3. User Secrets (тільки Development) — `dotnet user-secrets set "Catalog:StoreName" "Test"`
+4. Змінні середовища — роздільник `__`: `Catalog__StoreName=Test`
+5. Аргументи командного рядка — `--Catalog:StoreName=Test`
 
-`(IConfigurationRoot)config).GetDebugView()` показує підсумкове значення кожного
-ключа **і джерело**, звідки воно прийшло.
+`((IConfigurationRoot)config).GetDebugView()` показує підсумкове значення кожного
+ключа **і джерело**, звідки воно прийшло (endpoint `/sources`).
 
 ### Ієрархія та масиви
-`Catalog:DefaultPageSize` — двокрапка як роздільник рівнів. У змінних середовища —
+`Catalog:PageSize` — двокрапка як роздільник рівнів. У змінних середовища —
 подвійне підкреслення. Масиви: `Catalog:Tags:0`, `Catalog:Tags:1`.
 
 ### Options: три інтерфейси
@@ -39,7 +39,7 @@
 builder.Services.AddOptions<CatalogOptions>()
     .Bind(config.GetSection("Catalog"))
     .ValidateDataAnnotations()
-    .Validate(o => o.DefaultPageSize <= 100, "PageSize завеликий")
+    .Validate(o => o.PageSize <= 100, "PageSize завеликий")
     .ValidateOnStart();          // ← падіння на старті, а не при першому доступі
 ```
 Без `ValidateOnStart()` помилкова конфігурація «вистрілить» лише тоді, коли
@@ -47,15 +47,13 @@ builder.Services.AddOptions<CatalogOptions>()
 
 ## Спробуйте самі
 
-1. `GET /config/sources` — подивіться список провайдерів і `debugView`.
-2. `GET /options/io` — `EnableExperimentalSearch: true` (перекрито
-   `appsettings.Development.json`).
-3. `GET /options/snapshot`, потім **змініть `Currency` в `appsettings.json`** під
-   час роботи застосунку, повторіть запит — значення оновиться без перезапуску.
-   `GET /options/io` при цьому не зміниться.
-4. Зламайте конфіг: поставте `"Currency": "usd"` (маленькі) → застосунок не
-   стартує через `ValidateOnStart()` + `[RegularExpression]`.
-5. Запустіть із `Catalog__Currency=EUR dotnet run` — змінна середовища перекриє файл.
+1. `GET /sources` — повне дерево значень і джерела кожного.
+2. `GET /options/io` — `ExperimentalSearch: true` (перекрито `appsettings.Development.json`).
+3. `GET /options/snapshot`, потім **змініть `StoreName` в `appsettings.json`** під
+   час роботи, повторіть запит — значення оновиться без перезапуску. `GET /options/io`
+   при цьому не зміниться.
+4. Зламайте конфіг: `"PageSize": 999` → застосунок не стартує (`ValidateOnStart` + `[Range]`).
+5. Запустіть із `Catalog__StoreName=Test dotnet run` — змінна середовища перекриє файл.
 
 ## Посилання
 

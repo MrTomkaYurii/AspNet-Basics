@@ -15,12 +15,14 @@ products.MapGet("/{id:int}", ...);   // фактично /products/{id}
 ```
 Спільний префікс, метадані, фільтри й політики — в одному місці.
 
-### `TypedResults` та union-типи
-- `Results.Ok(x)` повертає `IResult` — зручно, але тип «розмитий».
-- `TypedResults.Ok(x)` повертає конкретний `Ok<T>` — краще для тестів і для OpenAPI.
-- `Results<Ok<Product>, NotFound>` як тип повернення хендлера — компілятор
-  стежить, що ви повертаєте лише заявлені варіанти, а OpenAPI-документ отримує
-  всі можливі коди без ручних атрибутів.
+### `Results` — фабрика відповідей
+`Results.Ok(x)`, `Results.NotFound()`, `Results.Created(uri, body)`,
+`Results.NoContent()`, `Results.BadRequest(msg)` — усі повертають `IResult`, який
+Minimal API виконає (серіалізує тіло, виставить код і заголовки).
+
+> Наступний рівень: `TypedResults.Ok(x)` повертає конкретний тип `Ok<T>`, а
+> `Results<Ok<Product>, NotFound>` як тип повернення хендлера дає компілятору й
+> OpenAPI-документу знати всі можливі коди. Див. приклад 19.
 
 ### Коди відповідей CRUD
 
@@ -48,7 +50,7 @@ products.MapGet("/{id:int}", ...);   // фактично /products/{id}
 1. `GET /products` → список; `GET /products/1` → об'єкт; `GET /products/999` → `404`.
 2. `POST /products` з коректним тілом → `201`, подивіться заголовок `Location`,
    потім `GET` за цим URL.
-3. `POST /products` з `"price": 0` або поганим `sku` → `400` + `ValidationProblem`.
+3. `POST /products` з `"categoryId": 99` → `400` (перевірка бізнес-правила).
 4. `PUT /products/1` → `200` з новою `version`. `PUT /products/999` → `404`.
 5. `DELETE /products/2` → `204`. Повторіть → знову `204` (ідемпотентність).
 

@@ -49,12 +49,12 @@ Constraint — це фільтр **співставлення**, а не вал�
 ## Спробуйте самі
 
 1. `GET /products/1` → товар. `GET /products/abc` → `404` (не пройшов `:int`).
-2. `GET /products/featured` → спеціальний маршрут виграв у `/products/{id}`.
+2. `GET /products/featured` → літеральний маршрут виграв у `/products/{id}`.
 3. `GET /products/1/reviews/3fa85f64-5717-4562-b3fc-2c963f66afa6` → два параметри.
-4. `GET /categories/laptops` → ок; `GET /categories/x` → `404` (`minlength(3)`).
+4. `GET /categories/laptops` → ок; `GET /categories/123` → `404` (`:alpha`).
 5. `GET /files/img/2026/logo.png` → catch-all зібрав увесь хвіст у `path`.
-6. `GET /search?q=hub&page=1&pageSize=5` → параметри з query.
-7. `GET /products/7/link` → готовий URL, зібраний `LinkGenerator`.
+6. `GET /pages` → `page = 1` (значення за замовчуванням).
+7. `GET /link/7` → готовий URL, зібраний `LinkGenerator`.
 8. У будь-якій відповіді дивіться заголовок `X-Matched-Endpoint` — його додає
    middleware між `UseRouting` і виконанням.
 

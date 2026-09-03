@@ -6,6 +6,9 @@ GET {{host}}/openapi/v1.json
 ### Swagger UI (відкрийте у браузері)
 GET {{host}}/swagger
 
+### Scalar — той самий документ, інший UI (відкрийте у браузері)
+GET {{host}}/scalar
+
 ### Endpoint-и, описані в документі
 GET {{host}}/products
 GET {{host}}/products/1
@@ -14,4 +17,4 @@ GET {{host}}/products/1
 POST {{host}}/products
 Content-Type: application/json
 
-{ "name": "Wireless Mouse M2", "description": "Тиха миша", "price": 24.99, "categoryId": 2, "sku": "ACC-MOUSE-M2" }
+{ "name": "Бездротова миша", "price": 24.99, "categoryId": 2 }

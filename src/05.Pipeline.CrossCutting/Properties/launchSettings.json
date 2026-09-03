@@ -4,19 +4,23 @@
     "Development": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
+      "launchUrl": "",
       "applicationUrl": "http://localhost:5005",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DEVDOCS_LAUNCH": ""
       }
     },
     "Production-like": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
+      "launchUrl": "",
       "applicationUrl": "http://localhost:5005",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production"
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DEVDOCS_LAUNCH": ""
       }
     }
   }

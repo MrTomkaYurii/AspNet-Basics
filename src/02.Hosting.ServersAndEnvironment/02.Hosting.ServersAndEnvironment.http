@@ -9,8 +9,8 @@ GET {{host}}/env
 ### Який сервер і на яких адресах слухає
 GET {{host}}/server
 
-### Значення з конфігурації (різні для Dev / Prod)
+### Значення з конфігурації (різне для Dev / Prod)
 GET {{host}}/config
 
-### Список маршрутів — доступний лише в Development
-GET {{host}}/dev/routes
+### Лише в Development
+GET {{host}}/dev/ping

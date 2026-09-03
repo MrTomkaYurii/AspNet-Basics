@@ -4,10 +4,12 @@
     "14.Rest.ResourcesAndVerbs": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
+      "launchUrl": "scalar",
       "applicationUrl": "http://localhost:5014",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DEVDOCS_LAUNCH": "scalar"
       }
     }
   }

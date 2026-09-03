@@ -1,10 +1,11 @@
 @host = http://localhost:5007
 
 ### Порівняння id у межах одного запиту
+# transientA ≠ transientB; scoped == scopedFromMiddleware; singleton — завжди той самий
 GET {{host}}/ids
 
 ### Повторіть — scoped зміниться, singleton лишиться
 GET {{host}}/ids
 
 ### Дві вручну створені області → різні scoped-екземпляри
-GET {{host}}/manual-scope
+GET {{host}}/scopes

@@ -3,9 +3,6 @@
 ### Список
 GET {{host}}/api/products
 
-### Фільтр через query
-GET {{host}}/api/products?search=hub
-
 ### Один товар
 GET {{host}}/api/products/1
 
@@ -16,19 +13,19 @@ GET {{host}}/api/products/999
 POST {{host}}/api/products
 Content-Type: application/json
 
-{ "name": "x", "price": -1, "categoryId": 1, "sku": "nope" }
+{ "name": "x", "price": -1, "categoryId": 1 }
 
 ### Крос-польова помилка через ModelState
 POST {{host}}/api/products
 Content-Type: application/json
 
-{ "name": "Valid Product", "price": 15.0, "categoryId": 99, "sku": "ACC-NEW-1" }
+{ "name": "Коректна назва", "price": 15, "categoryId": 99 }
 
 ### Успішне створення → 201 + Location
 POST {{host}}/api/products
 Content-Type: application/json
 
-{ "name": "Valid Product", "price": 15.0, "categoryId": 3, "sku": "ACC-NEW-1" }
+{ "name": "Коректна назва", "price": 15, "categoryId": 3 }
 
 ### Категорії
 GET {{host}}/api/categories

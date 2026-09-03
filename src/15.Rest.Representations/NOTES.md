@@ -48,7 +48,8 @@ ETag: `W/"..."` — слабкий (семантична еквівалентн�
 
 ### JSON Patch у .NET 10
 Пакет `Microsoft.AspNetCore.JsonPatch.SystemTextJson` — на базі STJ, без
-Newtonsoft. `JsonPatchDocument<T>` + `patch.ApplyTo(target, onError)`.
+Newtonsoft. `JsonPatchDocument<T>` + `patch.ApplyTo(target)`. Merge Patch у прикладі
+не реалізовано — для нього тримають «сирий» JSON і перевіряють наявність ключів.
 
 ## Спробуйте самі
 
@@ -59,8 +60,6 @@ Newtonsoft. `JsonPatchDocument<T>` + `patch.ApplyTo(target, onError)`.
    Зі свіжим → `200`, у відповіді новий `ETag`.
 5. JSON Patch: `PATCH /products/1`, `Content-Type: application/json-patch+json`,
    тіло `[{"op":"replace","path":"/price","value":1234.50}]`.
-6. Merge Patch: `PATCH /products/1`, `Content-Type: application/merge-patch+json`,
-   тіло `{"price": 999}`.
 
 ## Посилання
 
