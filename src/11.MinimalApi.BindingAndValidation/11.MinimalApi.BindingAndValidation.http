@@ -1,0 +1,35 @@
+@host = http://localhost:5011
+
+### route → id
+GET {{host}}/bind/route/42
+
+### query, зокрема масив і DateOnly
+GET {{host}}/bind/query?q=hub&page=2&tags=new&tags=sale&since=2026-01-01
+
+### header (обов'язковий)
+GET {{host}}/bind/header
+X-Tenant: acme
+
+### header відсутній → 400
+GET {{host}}/bind/header
+
+### [AsParameters]
+GET {{host}}/bind/as-parameters/2?search=key&pageSize=1
+
+### власний тип із TryParse
+GET {{host}}/bind/geo/50.45,30.52
+
+### не парситься → 400
+GET {{host}}/bind/geo/oops
+
+### вбудована валідація → 400 ValidationProblem
+POST {{host}}/validate/auto
+Content-Type: application/json
+
+{ "name": "x", "price": 0, "categoryId": 1, "sku": "bad" }
+
+### крос-польова валідація у фільтрі
+POST {{host}}/validate/filter
+Content-Type: application/json
+
+{ "name": "Valid Name", "price": 10, "categoryId": 99, "sku": "ACC-OK-1" }

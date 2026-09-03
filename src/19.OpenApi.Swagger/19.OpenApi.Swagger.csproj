@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>OpenApi.Swagger</RootNamespace>
+    <AssemblyName>19.OpenApi.Swagger</AssemblyName>
+
+    <!-- Вмикаємо генерацію XML-документації, щоб OpenApi підхопив /// коментарі. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- не сваритись за відсутні XML-коментарі -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Генерація документа OpenAPI — вбудована в .NET (без сторонніх залежностей). -->
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <!-- Лише інтерактивний UI поверх готового /openapi/v1.json. -->
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\00.Common\Common.csproj" />
+  </ItemGroup>
+
+</Project>

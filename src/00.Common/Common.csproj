@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Common</RootNamespace>
+    <AssemblyName>Common</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      FrameworkReference дає доступ до типів ASP.NET Core (IServiceCollection тощо)
+      без окремих NuGet-пакетів. Потрібно для методу-розширення AddCatalog().
+    -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,25 @@
+@host = http://localhost:5009
+
+### Параметр із constraint :int
+GET {{host}}/products/1
+
+### Несумісний сегмент → 404 (маршрут не підійшов)
+GET {{host}}/products/abc
+
+### Конкретніший маршрут виграє
+GET {{host}}/products/featured
+
+### Кілька параметрів + :guid
+GET {{host}}/products/1/reviews/3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+### :alpha + minlength(3)
+GET {{host}}/categories/laptops
+
+### Catch-all {**path}
+GET {{host}}/files/img/2026/logo.png
+
+### Query string для операцій над колекцією
+GET {{host}}/search?q=hub&page=1&pageSize=5
+
+### Генерація посилання через LinkGenerator
+GET {{host}}/products/7/link

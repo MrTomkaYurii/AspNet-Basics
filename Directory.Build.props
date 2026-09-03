@@ -1,0 +1,29 @@
+<Project>
+
+  <!--
+    Directory.Build.props автоматично підхоплюється MSBuild для КОЖНОГО проекту,
+    що лежить у цій папці або глибше. Тут ми тримаємо налаштування, спільні
+    для всіх прикладів курсу, щоб не дублювати їх у кожному .csproj.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+
+    <!-- Вмикаємо C# nullable reference types у всьому курсі. -->
+    <Nullable>enable</Nullable>
+
+    <!-- Неявні using-и: не треба писати using System; using System.Linq; тощо. -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <LangVersion>latest</LangVersion>
+
+    <!-- Прибирає купу локалізаційних ресурсів ICU; для навчального API цього достатньо. -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- Попередження = помилки тільки в CI, локально не заважає експериментувати. -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+
+    <!-- Прибираємо зайвий рядок "Building..." і робимо збірку тихішою. -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>

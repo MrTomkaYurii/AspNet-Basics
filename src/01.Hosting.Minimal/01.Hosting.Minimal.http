@@ -1,0 +1,13 @@
+@host = http://localhost:5001
+
+### Привітання (значення з конфігурації)
+GET {{host}}/
+
+### Інформація про хост і середовище
+GET {{host}}/info
+
+### Товари з каталогу (ICatalog з DI)
+GET {{host}}/products
+
+### Ініціювати graceful shutdown
+GET {{host}}/shutdown

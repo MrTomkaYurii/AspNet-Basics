@@ -1,0 +1,22 @@
+@host = http://localhost:5018
+
+### Точка входу — далі йдіть лише за _links
+GET {{host}}/
+
+### Колекція з self-посиланнями
+GET {{host}}/products
+
+### Елемент: self, category, addToCart
+GET {{host}}/products/1
+
+### Порожній кошик — checkout у _links відсутній
+GET {{host}}/cart
+
+### Додаємо товар → у _links з'являється checkout
+POST {{host}}/cart/items
+Content-Type: application/json
+
+{ "productId": 1, "quantity": 2 }
+
+### Оформлення
+POST {{host}}/cart/checkout

@@ -1,0 +1,17 @@
+@host = http://localhost:5019
+
+### Сирий документ OpenAPI
+GET {{host}}/openapi/v1.json
+
+### Swagger UI (відкрийте у браузері)
+GET {{host}}/swagger
+
+### Endpoint-и, описані в документі
+GET {{host}}/products
+GET {{host}}/products/1
+
+### Створення (приклад тіла є в Swagger UI)
+POST {{host}}/products
+Content-Type: application/json
+
+{ "name": "Wireless Mouse M2", "description": "Тиха миша", "price": 24.99, "categoryId": 2, "sku": "ACC-MOUSE-M2" }

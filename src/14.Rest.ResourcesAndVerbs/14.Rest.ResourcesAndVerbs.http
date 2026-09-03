@@ -1,0 +1,37 @@
+@host = http://localhost:5014
+
+### Семантика дієслів
+GET {{host}}/
+
+### Колекція → 200
+GET {{host}}/products
+
+### POST створює новий ресурс (виконайте двічі — буде два різних id)
+POST {{host}}/products
+Content-Type: application/json
+
+{ "name": "Desk Lamp", "price": 29.90, "categoryId": 3, "sku": "ACC-LAMP-1" }
+
+### PUT ідемпотентний — виконайте двічі, стан однаковий
+PUT {{host}}/products/1
+Content-Type: application/json
+
+{ "name": "ThinkPad X1 Carbon", "description": "оновлено", "price": 1850, "categoryId": 1, "sku": "LAP-X1C-14" }
+
+### DELETE ідемпотентний — 204 і вдруге
+DELETE {{host}}/products/2
+
+### Немає ресурсу → 404
+GET {{host}}/products/999
+
+### Метод не дозволений для URI → 405 + Allow
+POST {{host}}/products/1
+Content-Type: application/json
+
+{}
+
+### Непідтримуваний тип тіла → 415
+POST {{host}}/products
+Content-Type: text/plain
+
+hello

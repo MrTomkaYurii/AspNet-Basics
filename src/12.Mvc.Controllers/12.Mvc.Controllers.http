@@ -1,0 +1,34 @@
+@host = http://localhost:5012
+
+### Список
+GET {{host}}/api/products
+
+### Фільтр через query
+GET {{host}}/api/products?search=hub
+
+### Один товар
+GET {{host}}/api/products/1
+
+### 404
+GET {{host}}/api/products/999
+
+### Авто-400 від [ApiController] (у коді немає перевірки)
+POST {{host}}/api/products
+Content-Type: application/json
+
+{ "name": "x", "price": -1, "categoryId": 1, "sku": "nope" }
+
+### Крос-польова помилка через ModelState
+POST {{host}}/api/products
+Content-Type: application/json
+
+{ "name": "Valid Product", "price": 15.0, "categoryId": 99, "sku": "ACC-NEW-1" }
+
+### Успішне створення → 201 + Location
+POST {{host}}/api/products
+Content-Type: application/json
+
+{ "name": "Valid Product", "price": 15.0, "categoryId": 3, "sku": "ACC-NEW-1" }
+
+### Категорії
+GET {{host}}/api/categories

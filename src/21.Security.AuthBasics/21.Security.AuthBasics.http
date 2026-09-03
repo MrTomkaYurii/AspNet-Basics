@@ -1,0 +1,39 @@
+@host = http://localhost:5021
+
+### Відкритий ресурс — без токена
+GET {{host}}/public
+
+### Без токена → 401
+GET {{host}}/me
+
+### Отримати токен (alice = admin + premium, 30 років)
+# @name login
+POST {{host}}/token
+Content-Type: application/json
+
+{ "username": "alice", "password": "password" }
+
+### Використати токен
+@token = {{login.response.body.access_token}}
+
+### Claims автентифікованого користувача
+GET {{host}}/me
+Authorization: Bearer {{token}}
+
+### Роль admin — alice проходить
+GET {{host}}/admin
+Authorization: Bearer {{token}}
+
+### Claim subscription=premium
+GET {{host}}/premium
+Authorization: Bearer {{token}}
+
+### Політика age >= 18
+GET {{host}}/adult
+Authorization: Bearer {{token}}
+
+### Токен bob (user, 16) — /admin і /adult дадуть 403
+POST {{host}}/token
+Content-Type: application/json
+
+{ "username": "bob", "password": "password" }

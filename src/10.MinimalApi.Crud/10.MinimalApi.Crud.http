@@ -1,0 +1,51 @@
+@host = http://localhost:5010
+
+### Список товарів
+GET {{host}}/products
+
+### Один товар
+GET {{host}}/products/1
+
+### Немає такого → 404
+GET {{host}}/products/999
+
+### Створення → 201 + заголовок Location
+POST {{host}}/products
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse M2",
+  "description": "Тиха бездротова миша",
+  "price": 24.99,
+  "categoryId": 2,
+  "sku": "ACC-MOUSE-M2"
+}
+
+### Помилка валідації → 400 ValidationProblem
+POST {{host}}/products
+Content-Type: application/json
+
+{
+  "name": "x",
+  "price": 0,
+  "categoryId": 99,
+  "sku": "bad sku"
+}
+
+### Повна заміна → 200 з новою version
+PUT {{host}}/products/1
+Content-Type: application/json
+
+{
+  "name": "ThinkPad X1 Carbon Gen 12",
+  "description": "Оновлена модель",
+  "price": 1999.00,
+  "categoryId": 1,
+  "sku": "LAP-X1C-14"
+}
+
+### Видалення → 204 (повторіть — знову 204)
+DELETE {{host}}/products/2
+
+### Категорії
+GET {{host}}/categories

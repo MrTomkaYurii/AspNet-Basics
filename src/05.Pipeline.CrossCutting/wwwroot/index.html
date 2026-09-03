@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Приклад 05 — статичні файли</title>
+  <style>body{font:16px/1.5 system-ui;margin:3rem auto;max-width:40rem;padding:0 1rem}code{background:#eee;padding:.1em .3em;border-radius:3px}</style>
+</head>
+<body>
+  <h1>Це статичний файл із <code>wwwroot/</code></h1>
+  <p>Його віддає <code>UseStaticFiles()</code> ще до маршрутизації. Спробуйте API:</p>
+  <ul>
+    <li><code>GET /api/data</code> — успішна відповідь</li>
+    <li><code>GET /api/fail</code> — виняток → Problem Details (у Production)</li>
+    <li><code>GET /api/missing</code> — 404 із тілом від <code>UseStatusCodePages</code></li>
+    <li><code>GET /api/teapot</code> — рукотворний Problem Details, статус 418</li>
+  </ul>
+</body>
+</html>

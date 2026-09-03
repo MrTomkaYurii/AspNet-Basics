@@ -1,0 +1,24 @@
+@host = http://localhost:5005
+
+### Статичний файл із wwwroot
+GET {{host}}/
+
+### Успішна відповідь (з CORS-політикою)
+GET {{host}}/api/data
+
+### Перевірка CORS: дозволений origin → є Access-Control-Allow-Origin
+GET {{host}}/api/data
+Origin: https://example.com
+
+### Перевірка CORS: чужий origin → заголовка немає
+GET {{host}}/api/data
+Origin: https://evil.com
+
+### Виняток → сторінка розробника (Dev) або Problem Details (Prod)
+GET {{host}}/api/fail
+
+### Голий 404 → тіло від UseStatusCodePages
+GET {{host}}/api/missing
+
+### Рукотворний Problem Details, статус 418
+GET {{host}}/api/teapot

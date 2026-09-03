@@ -1,0 +1,22 @@
+@host = http://localhost:5016
+
+### Пагінація + сортування за спаданням ціни — дивіться заголовки X-Total-Count, Link
+GET {{host}}/products?sort=-price&pageSize=2&page=1
+
+### Наступна сторінка
+GET {{host}}/products?sort=-price&pageSize=2&page=2
+
+### Фільтр за категорією та ціною
+GET {{host}}/products?category=accessories&maxPrice=50
+
+### Пошук за назвою
+GET {{host}}/products?q=keyboard
+
+### Завеликий pageSize → 400 ValidationProblem
+GET {{host}}/products?pageSize=999
+
+### Недозволене поле сортування → 400
+GET {{host}}/products?sort=secret
+
+### Немає ресурсу → 404 ProblemDetails із полем productId
+GET {{host}}/products/999

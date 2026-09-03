@@ -1,0 +1,23 @@
+@host = http://localhost:5003
+
+### Головна
+GET {{host}}/
+
+### Параметр із query, прочитаний вручну
+GET {{host}}/hello?name=Іван
+
+### Читання тіла запиту як потоку
+POST {{host}}/echo
+Content-Type: text/plain
+
+Привіт із тіла запиту
+
+### Коротке замикання: без ключа → 401
+GET {{host}}/secret
+
+### З коректним ключем → проходить далі
+GET {{host}}/secret
+X-Api-Key: let-me-in
+
+### 404 + дописаний рядок від middleware на виході
+GET {{host}}/nope

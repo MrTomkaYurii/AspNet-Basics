@@ -1,0 +1,10 @@
+@host = http://localhost:5013
+
+### Нормальний потік — дивіться поле trace та X-Elapsed-Ms
+GET {{host}}/api/demo/ok
+
+### Виняток → перехоплює ExceptionFilter (500), trace містить крок X
+GET {{host}}/api/demo/boom
+
+### Затримка → заголовок X-Elapsed-Ms від ResourceFilter
+GET {{host}}/api/demo/slow

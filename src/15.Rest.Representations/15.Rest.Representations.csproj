@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>Rest.Representations</RootNamespace>
+    <AssemblyName>15.Rest.Representations</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- JSON Patch (RFC 6902) на базі System.Text.Json — нове в .NET 10, без Newtonsoft. -->
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch.SystemTextJson" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\00.Common\Common.csproj" />
+  </ItemGroup>
+
+</Project>

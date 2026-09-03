@@ -1,0 +1,25 @@
+@host = http://localhost:5006
+
+### Головна
+GET {{host}}/
+
+### Гілка Map: /admin без токена → 403
+GET {{host}}/admin/users
+
+### Гілка Map: з токеном → бачимо Path без префікса та PathBase
+GET {{host}}/admin/users?token=root
+
+### Гілка MapWhen за заголовком
+GET {{host}}/
+X-Legacy-Client: 1
+
+### UseWhen: /api без ключа → 401
+GET {{host}}/api/ping
+
+### UseWhen: /api з ключем → 200, керування повернулось у спільний endpoint
+GET {{host}}/api/ping
+X-Api-Key: secret
+
+### Доказ повернення в основний конвеєр
+GET {{host}}/api/whoami
+X-Api-Key: secret

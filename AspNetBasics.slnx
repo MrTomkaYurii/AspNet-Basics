@@ -1,0 +1,28 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/00.Common/Common.csproj" />
+    <Project Path="src/01.Hosting.Minimal/01.Hosting.Minimal.csproj" />
+    <Project Path="src/02.Hosting.ServersAndEnvironment/02.Hosting.ServersAndEnvironment.csproj" />
+    <Project Path="src/03.Pipeline.FromScratch/03.Pipeline.FromScratch.csproj" />
+    <Project Path="src/04.Pipeline.CustomMiddleware/04.Pipeline.CustomMiddleware.csproj" />
+    <Project Path="src/05.Pipeline.CrossCutting/05.Pipeline.CrossCutting.csproj" />
+    <Project Path="src/06.Pipeline.Branching/06.Pipeline.Branching.csproj" />
+    <Project Path="src/07.DependencyInjection.Lifetimes/07.DependencyInjection.Lifetimes.csproj" />
+    <Project Path="src/08.Configuration.Options/08.Configuration.Options.csproj" />
+    <Project Path="src/09.Routing.Endpoints/09.Routing.Endpoints.csproj" />
+    <Project Path="src/10.MinimalApi.Crud/10.MinimalApi.Crud.csproj" />
+    <Project Path="src/11.MinimalApi.BindingAndValidation/11.MinimalApi.BindingAndValidation.csproj" />
+    <Project Path="src/12.Mvc.Controllers/12.Mvc.Controllers.csproj" />
+    <Project Path="src/13.Mvc.Filters/13.Mvc.Filters.csproj" />
+    <Project Path="src/14.Rest.ResourcesAndVerbs/14.Rest.ResourcesAndVerbs.csproj" />
+    <Project Path="src/15.Rest.Representations/15.Rest.Representations.csproj" />
+    <Project Path="src/16.Rest.CollectionsAndErrors/16.Rest.CollectionsAndErrors.csproj" />
+    <Project Path="src/17.Rest.Versioning/17.Rest.Versioning.csproj" />
+    <Project Path="src/18.Rest.Hypermedia/18.Rest.Hypermedia.csproj" />
+    <Project Path="src/19.OpenApi.Swagger/19.OpenApi.Swagger.csproj" />
+    <Project Path="src/21.Security.AuthBasics/21.Security.AuthBasics.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/20.Testing/20.Testing.csproj" />
+  </Folder>
+</Solution>

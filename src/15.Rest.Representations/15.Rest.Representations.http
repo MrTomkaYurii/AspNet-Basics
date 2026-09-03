@@ -1,0 +1,45 @@
+@host = http://localhost:5015
+
+### JSON (за замовчуванням)
+GET {{host}}/products/1
+Accept: application/json
+
+### XML — той самий ресурс, інший формат
+GET {{host}}/products/1
+Accept: application/xml
+
+### Формат, якого немає → 406
+GET {{host}}/products/1
+Accept: text/csv
+
+### Умовний GET: підставте ETag із попередньої відповіді → 304
+GET {{host}}/products/1
+If-None-Match: W/"1-1"
+
+### PUT без If-Match → 428 Precondition Required
+PUT {{host}}/products/1
+Content-Type: application/json
+
+{ "name": "X1 Carbon", "price": 1700, "categoryId": 1, "sku": "LAP-X1C-14" }
+
+### PUT зі свіжим ETag → 200
+PUT {{host}}/products/1
+Content-Type: application/json
+If-Match: W/"1-1"
+
+{ "name": "X1 Carbon (updated)", "price": 1700, "categoryId": 1, "sku": "LAP-X1C-14" }
+
+### JSON Patch (RFC 6902)
+PATCH {{host}}/products/1
+Content-Type: application/json-patch+json
+
+[
+  { "op": "replace", "path": "/price", "value": 1234.50 },
+  { "op": "replace", "path": "/description", "value": "ціну знижено" }
+]
+
+### JSON Merge Patch (RFC 7386)
+PATCH {{host}}/products/1
+Content-Type: application/merge-patch+json
+
+{ "price": 999 }

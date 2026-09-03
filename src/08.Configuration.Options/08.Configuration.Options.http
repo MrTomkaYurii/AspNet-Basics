@@ -1,0 +1,16 @@
+@host = http://localhost:5008
+
+### Провайдери конфігурації та повне дерево значень
+GET {{host}}/config/sources
+
+### Прямий доступ до значень
+GET {{host}}/config/value
+
+### IOptions — обчислюється один раз
+GET {{host}}/options/io
+
+### IOptionsSnapshot — перечитується раз на запит (змініть appsettings.json і повторіть)
+GET {{host}}/options/snapshot
+
+### IOptionsMonitor — «живе» значення + OnChange
+GET {{host}}/options/monitor
