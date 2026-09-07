@@ -1,5 +1,6 @@
 using Common;
 using Common.Domain;
+using Scalar.AspNetCore;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 01. Мінімальний хост ASP.NET Core
@@ -19,15 +20,38 @@ var builder = WebApplication.CreateBuilder(args);
 // ======================================================================
 // Доки не викликано Build(), ми лише НАПОВНЮЄМО контейнер.
 builder.Services.AddCatalog();
-builder.Services.AddApiDocs();   // /openapi, /swagger, /scalar
+
+// Спільний помічник Common.ApiDocs підключав OpenAPI + Swagger + Scalar одним
+// рядком. Тут ми свідомо ним НЕ користуємось, а робимо те саме секціями нижче —
+// щоб було видно, що саме він робить.
+// builder.Services.AddApiDocs();   // ← замінено секціями
+
+// ── OpenAPI: генератор машиночитного документа ─────────────────────────────
+builder.Services.AddOpenApi();
 
 // Build() «запечатує» контейнер: далі нові сервіси додавати не можна.
 var app = builder.Build();
 
 // ======================================================================
-//  2 · КОНВЕЄР  (middleware)
+//  2 · КОНВЕЄР  (middleware)  +  ДОКУМЕНТАЦІЯ
 // ======================================================================
-app.MapApiDocs();
+// app.MapApiDocs();   // ← замінено секціями нижче
+
+// ── OpenAPI-документ ──────────────────────────────────────────────────────
+app.MapOpenApi();   // GET /openapi/v1.json — генерує опис апі та робить доступним за цим шляхом
+                    // JSON-документ OpenAPI 3.0.1 (Swagger). Див. Common.ApiDocs.
+
+        // ── Swagger UI ───────────────────────────────────────────────────────────
+        // Вимкнено. Розкоментуйте рядок, щоб отримати переглядач на /swagger:
+        // app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "API v1"));
+
+        // ── Scalar UI ────────────────────────────────────────────────────────────
+        // Активний переглядач документа: GET /scalar
+        app.MapScalarApiReference(o => o.WithOpenApiRoutePattern("/openapi/v1.json"));
+
+        // Відкрити потрібну сторінку в браузері при `dotnet run` (VS / Rider / dotnet
+        // watch роблять це самі через launchSettings.json). Розкоментуйте за потреби:
+        // app.OpenBrowserOnStart();
 
 // Хуки життєвого циклу процесу. На Ctrl+C хост перестає приймати нові запити,
 // дає час добити поточні, і лише потім завершується — це graceful shutdown.

@@ -1,6 +1,7 @@
 using Common;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Scalar.AspNetCore;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 02. HTTP-сервери та середовища виконання
@@ -23,14 +24,21 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxRequestBodySize = 1 * 1024 * 1024;   // 1 МБ
 });
 
-builder.Services.AddApiDocs();
+// Документація підключається НАПРЯМУ, без спільного помічника Common.ApiDocs —
+// щоб було видно самі виклики (детально розібрано в прикладі 01):
+//   • AddOpenApi()  — генератор документа /openapi/v1.json;
+//   • MapScalarApiReference() нижче — переглядач цього документа на /scalar.
+// builder.Services.AddApiDocs();   // ← замінено прямим викликом
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 // ======================================================================
 //  2 · КОНВЕЄР  (middleware)
 // ======================================================================
-app.MapApiDocs();
+// app.MapApiDocs();   // ← замінено секцією нижче
+app.MapOpenApi();                                                    // GET /openapi/v1.json
+app.MapScalarApiReference(o => o.WithOpenApiRoutePattern("/openapi/v1.json"));  // GET /scalar
 
 // Класична реакція на середовище: детальна сторінка помилки лише в Development.
 if (app.Environment.IsDevelopment())

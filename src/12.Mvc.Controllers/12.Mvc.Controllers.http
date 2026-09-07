@@ -1,5 +1,11 @@
 @host = http://localhost:5012
 
+### OpenAPI-документ
+GET {{host}}/openapi/v1.json
+
+### Scalar UI (відкрийте у браузері)
+GET {{host}}/scalar
+
 ### Список
 GET {{host}}/api/products
 

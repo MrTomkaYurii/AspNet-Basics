@@ -3,6 +3,12 @@
 ### Привітання
 GET {{host}}/
 
+### OpenAPI-документ
+GET {{host}}/openapi/v1.json
+
+### Scalar UI (відкрийте у браузері)
+GET {{host}}/scalar
+
 ### Середовище (сервіс із DI)
 GET {{host}}/env
 

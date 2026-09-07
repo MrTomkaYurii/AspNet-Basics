@@ -1,15 +1,26 @@
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "01.Hosting.Minimal": {
+    "01 · Scalar UI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "",
+      "launchUrl": "scalar",
       "applicationUrl": "http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DEVDOCS_LAUNCH": ""
+        "DEVDOCS_LAUNCH": "scalar"
+      }
+    },
+    "01 · OpenAPI (raw JSON)": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "openapi/v1.json",
+      "applicationUrl": "http://localhost:5001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DEVDOCS_LAUNCH": "openapi/v1.json"
       }
     }
   }

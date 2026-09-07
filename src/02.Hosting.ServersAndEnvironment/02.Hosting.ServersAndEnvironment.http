@@ -3,6 +3,12 @@
 ### Головна
 GET {{host}}/
 
+### OpenAPI-документ
+GET {{host}}/openapi/v1.json
+
+### Scalar UI (відкрийте у браузері)
+GET {{host}}/scalar
+
 ### Поточне середовище
 GET {{host}}/env
 

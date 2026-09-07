@@ -12,7 +12,8 @@ namespace Pipeline.CustomMiddleware.Middleware;
 ///     лише Singleton-залежності; Scoped — параметром InvokeAsync);
 ///   • реєструвати в DI не треба.
 /// </summary>
-public sealed class RequestTimingMiddleware(RequestDelegate next, ILogger<RequestTimingMiddleware> logger)
+public sealed class RequestTimingMiddleware(RequestDelegate next,
+    ILogger<RequestTimingMiddleware> logger)
 {
     public async Task InvokeAsync(HttpContext context)
     {
