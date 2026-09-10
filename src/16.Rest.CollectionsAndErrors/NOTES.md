@@ -34,9 +34,9 @@ GET /products?q=hub&category=accessories&minPrice=10&maxPrice=100&sort=-price&pa
   за RFC 8288) — так робить GitHub API. Тут показано `X-Total-Count`.
 
 ### Формат помилок
-- `Results.ValidationProblem(errors)` → `400`, `application/problem+json`, поле
+- `ValidationProblem(ModelState)` → `400`, `application/problem+json`, поле
   `errors` — словник `поле → [повідомлення]`.
-- `Results.Problem(title, statusCode, extensions)` → будь-який 4xx/5xx
+- `Problem(title:, statusCode:, extensions:)` → будь-який 4xx/5xx
   з кастомними полями (тут `productId`).
 - Один формат на весь API — клієнт пише обробку помилок **раз**.
 

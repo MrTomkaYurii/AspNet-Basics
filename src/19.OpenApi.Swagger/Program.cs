@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using Common;
 using Common.Domain;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Scalar.AspNetCore;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -12,6 +11,9 @@ using Scalar.AspNetCore;
 //
 // .NET 10 генерує документ вбудовано (AddOpenApi / MapOpenApi). Swagger UI та
 // Scalar — лише переглядачі поверх того самого /openapi/v1.json; працюють паралельно.
+//
+// Обробники — у ProductsController / CategoriesController. Опис (summary, коди
+// відповідей) береться з /// XML-коментарів і атрибутів [ProducesResponseType].
 // ─────────────────────────────────────────────────────────────────────────────
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 //  1 · СЕРВІСИ
 // ======================================================================
 builder.Services.AddCatalog();
+builder.Services.AddControllers();
 
 builder.Services.AddOpenApi(options =>
 {
@@ -57,23 +60,6 @@ app.MapGet("/", () => Results.Content(
     "<h1>Приклад 19</h1><ul><li><a href='/swagger'>/swagger</a></li><li><a href='/scalar'>/scalar</a></li></ul>",
     "text/html"));
 
-var products = app.MapGroup("/products").WithTags("Products");
-
-products.MapGet("/", (ICatalog catalog) => catalog.GetProducts())
-    .WithSummary("Список товарів");
-
-// Union-тип результату → OpenAPI отримує коди 200 і 404 без ручних атрибутів.
-products.MapGet("/{id:int}", Results<Ok<Product>, NotFound> (int id, ICatalog catalog) =>
-        catalog.FindProduct(id) is { } p ? TypedResults.Ok(p) : TypedResults.NotFound())
-    .WithSummary("Отримати товар за Id");
-
-products.MapPost("/", Created<Product> (ProductInput input, ICatalog catalog) =>
-    {
-        var created = catalog.Add(input);
-        return TypedResults.Created($"/products/{created.Id}", created);
-    })
-    .WithSummary("Створити товар");
-
-app.MapGet("/categories", (ICatalog catalog) => catalog.GetCategories()).WithTags("Categories");
+app.MapControllers();
 
 app.Run();

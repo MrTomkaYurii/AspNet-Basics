@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "10.MinimalApi.Crud": {
+    "10.Mvc.Crud": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

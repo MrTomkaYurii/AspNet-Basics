@@ -54,9 +54,9 @@ app.MapScalarApiReference(o => o.WithOpenApiRoutePattern("/openapi/v1.json")); /
 |---|---|
 | шляхи, методи, параметри | таблиця маршрутів |
 | схеми запиту/відповіді | типи параметрів і результату (`TypedResults`, `Results<...>`) |
-| коди відповідей | union-типи результату, `Produces<T>()`, `[ProducesResponseType]` |
-| summary / description | `.WithSummary()`, `.WithDescription()`, XML-коментарі `///` |
-| теги (групування) | `.WithTags()` |
+| коди відповідей | `ActionResult<T>` + `[ProducesResponseType<T>(код)]` |
+| summary / description | XML-коментарі `///`, `[EndpointSummary]` / `[EndpointDescription]` |
+| теги (групування) | `[Tags("...")]` на контролері |
 | приклади, `Info`, security | **трансформери** (`AddDocumentTransformer`, `AddSchemaTransformer`, `AddOperationTransformer`) |
 
 ### XML-коментарі
@@ -75,9 +75,9 @@ app.MapScalarApiReference(o => o.WithOpenApiRoutePattern("/openapi/v1.json")); /
    API у двох переглядачах одночасно**. Спробуйте «Try it out» / «Send» на
    `POST /products` (приклад тіла підставлено трансформером схеми).
 4. У Scalar подивіться згенеровані сніпети коду (curl, C#, JavaScript…) для запиту.
-5. Подивіться, як union-тип `Results<Ok<Product>, NotFound>` перетворився на
-   коди `200` і `404` без жодного атрибута.
-6. Змініть `.WithSummary(...)` в коді — оновіть **обидві** сторінки, текст зміниться в обох.
+5. Подивіться, як `[ProducesResponseType<Product>(200)]` + `[ProducesResponseType(404)]`
+   на дії `GetById` перетворилися на коди `200` і `404` у документі.
+6. Змініть `/// <summary>` над дією — оновіть **обидві** сторінки, текст зміниться в обох.
 
 ## Посилання
 

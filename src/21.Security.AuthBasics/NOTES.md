@@ -4,7 +4,7 @@
 
 - Різницю **AuthN** (хто ти) і **AuthZ** (що тобі можна).
 - Схему `Bearer` з валідацією JWT.
-- `[Authorize]` / `RequireAuthorization`, ролі, claims, політики.
+- `[Authorize]` / `[Authorize(Policy = "...")]` / `[AllowAnonymous]`, ролі, claims, політики.
 - Місце auth-middleware у конвеєрі.
 
 > ⚠️ Користувачі та ключ підпису зашиті в код — **лише для навчання**. У проді:

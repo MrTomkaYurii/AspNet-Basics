@@ -119,16 +119,16 @@ app.Run();
 |---|---|
 | [`09.Routing.Endpoints`](src/09.Routing.Endpoints) | Endpoint routing, шаблони й обмеження маршрутів, route vs query, `LinkGenerator`, місце маршрутизації в конвеєрі |
 
-### Модуль 5. Minimal API
+### Модуль 5. Web API на контролерах
 | Проект | Тема |
 |---|---|
-| [`10.MinimalApi.Crud`](src/10.MinimalApi.Crud) | Повний CRUD, групи маршрутів, `TypedResults`, впровадження залежностей у хендлери |
-| [`11.MinimalApi.BindingAndValidation`](src/11.MinimalApi.BindingAndValidation) | Джерела параметрів, `[AsParameters]`, валідація, endpoint filters |
+| [`10.Mvc.Crud`](src/10.Mvc.Crud) | Повний CRUD на контролері, `ActionResult<T>`, `CreatedAtAction`, коди відповідей, `Location` |
+| [`11.Mvc.BindingAndValidation`](src/11.Mvc.BindingAndValidation) | Джерела прив'язки (`[FromRoute]`/`[FromQuery]`/`[FromHeader]`/`[FromBody]`), авто-`400`, `ModelState` |
 
-### Модуль 6. MVC / контролери
+### Модуль 6. MVC / контролери (глибше)
 | Проект | Тема |
 |---|---|
-| [`12.Mvc.Controllers`](src/12.Mvc.Controllers) | `[ApiController]`, атрибутна маршрутизація, `ActionResult<T>`, model binding, `ModelState` |
+| [`12.Mvc.Controllers`](src/12.Mvc.Controllers) | Розбір `[ApiController]`: авто-`400`, вивід джерела прив'язки, `ProblemDetails`, `ActionResult<T>` |
 | [`13.Mvc.Filters`](src/13.Mvc.Filters) | Фільтри Authorization / Resource / Action / Exception / Result, порядок, відмінність від middleware |
 
 ### Модуль 7. REST по-справжньому
@@ -157,7 +157,7 @@ app.Run();
 
 1. **Модуль 1–2** дають головну ідею: *ASP.NET Core — це конвеєр middleware поверх хоста*.
 2. **Модуль 4** показує, що маршрутизація — теж middleware.
-3. **Модуль 5–6** — два стилі (Minimal API та MVC) поверх того самого конвеєра.
+3. **Модуль 5–6** — Web API на контролерах: CRUD, прив'язка й валідація, розбір `[ApiController]`, фільтри.
 4. **Модуль 7** — семантика REST на вже знайомому API.
 5. **Модулі 3, 8, 9** можна вставляти після Модуля 1 у будь-якому місці.
 
@@ -165,7 +165,7 @@ app.Run();
 
 - ASP.NET Core docs: <https://learn.microsoft.com/aspnet/core>
 - Fundamentals → Middleware: <https://learn.microsoft.com/aspnet/core/fundamentals/middleware>
-- Minimal APIs: <https://learn.microsoft.com/aspnet/core/fundamentals/minimal-apis>
+- Create web APIs with controllers: <https://learn.microsoft.com/aspnet/core/web-api/>
 - RFC 9110 (HTTP Semantics): <https://www.rfc-editor.org/rfc/rfc9110>
 - RFC 9457 (Problem Details): <https://www.rfc-editor.org/rfc/rfc9457>
 - Microsoft REST API Guidelines: <https://github.com/microsoft/api-guidelines>

@@ -23,14 +23,28 @@
 
 `ApiVersionReader.Combine(...)` вмикає кілька одночасно.
 
+### Оголошення версій на контролері
+```csharp
+[ApiVersion(1)] [ApiVersion(2)]
+[Route("v{version:apiVersion}/products")]
+public sealed class ProductsController : ControllerBase
+{
+    [HttpGet, MapToApiVersion(1)] public ... GetV1();
+    [HttpGet, MapToApiVersion(2)] public ... GetV2();
+}
+```
+`AddApiVersioning(...).AddMvc()` вмикає ці атрибути. `[ApiVersion(1, Deprecated = true)]` —
+позначити версію застарілою. Сегмент `v{version:apiVersion}` у `[Route]` дає спосіб
+«версія в URL»; без нього версію візьмуть читачі з query / заголовка / media-type.
+
 ### Схема версій
 `Asp.Versioning` підтримує `major.minor`, дати (`2025-01-01`), статус
 (`2.0-beta`). Тримайтеся чогось одного. Семантика: змінюйте **major** на
 breaking change.
 
 ### Deprecation
-`HasDeprecatedApiVersion(...)` + `ReportApiVersions = true` → у відповідь
-додаються заголовки:
+`[ApiVersion(1, Deprecated = true)]` на контролері + `ReportApiVersions = true` →
+у відповідь додаються заголовки:
 ```
 api-supported-versions: 1.0, 2.0
 api-deprecated-versions: 1.0
@@ -57,5 +71,5 @@ endpoint) — не breaking, версію піднімати не треба. В
 ## Посилання
 
 - Asp.Versioning (ASP.NET API Versioning): <https://github.com/dotnet/aspnet-api-versioning>
-- Minimal API versioning приклади: <https://github.com/dotnet/aspnet-api-versioning/tree/main/examples/AspNetCore/WebApi>
+- MVC versioning приклади: <https://github.com/dotnet/aspnet-api-versioning/tree/main/examples/AspNetCore/Mvc>
 - RFC 8594 — The Sunset HTTP Header: <https://www.rfc-editor.org/rfc/rfc8594>

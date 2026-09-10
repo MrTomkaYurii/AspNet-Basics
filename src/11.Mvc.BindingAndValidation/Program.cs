@@ -1,15 +1,12 @@
 using Common;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ПРИКЛАД 14. REST: ресурси, дієслова, коди відповідей, ідемпотентність
+// ПРИКЛАД 11. Контролери: прив'язка параметрів і валідація
 //
-// REST — архітектурний стиль. Ключові ідеї:
-//   • РЕСУРС має стабільний URI (/products/42);
-//   • над ним — СТАНДАРТНІ операції HTTP-дієсловами;
-//   • сервер відповідає осмисленим СТАТУС-КОДОМ;
-//   • взаємодія БЕЗ СТАНУ (кожен запит самодостатній).
-//
-// Семантика дієслів — у NOTES.md. Обробники — у ProductsController.
+//   Частина 1. Звідки MVC бере значення параметрів дії ([FromRoute] / [FromQuery] /
+//              [FromBody] / [FromHeader] / [FromServices]).
+//   Частина 2. Валідація вводу: авто-400 від [ApiController] за DataAnnotations
+//              + власна крос-польова перевірка через ModelState.
 // ─────────────────────────────────────────────────────────────────────────────
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 // ======================================================================
 builder.Services.AddCatalog();
 builder.Services.AddControllers();
-builder.Services.AddProblemDetails();   // єдиний формат тіла помилок
 builder.Services.AddApiDocs();
 
 var app = builder.Build();
@@ -28,14 +24,11 @@ var app = builder.Build();
 //  2 · КОНВЕЄР
 // ======================================================================
 app.MapApiDocs();
-app.UseStatusCodePages();               // тіло для 404 / 405 / 415
 
 // ======================================================================
 //  3 · ЗАПИТИ
 // ======================================================================
-app.MapControllers();
+app.MapGet("/", () => "Приклад 11. Див. /bind/* та POST /validate.");
+app.MapControllers();   // дії — у BindController / ValidateController (тека Controllers/)
 
 app.Run();
-
-// Потрібно для інтеграційних тестів (приклад 20): WebApplicationFactory<Program>.
-public partial class Program;

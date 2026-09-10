@@ -1,6 +1,5 @@
 using Common;
 using Configuration.Options;
-using Microsoft.Extensions.Options;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 08. Конфігурація та патерн Options
@@ -26,6 +25,7 @@ builder.Services
     .ValidateDataAnnotations()
     .ValidateOnStart();          // падіння на СТАРТІ, а не при першому зверненні
 
+builder.Services.AddControllers();
 builder.Services.AddApiDocs();
 
 var app = builder.Build();
@@ -39,20 +39,6 @@ app.MapApiDocs();
 //  3 · ЗАПИТИ
 // ======================================================================
 app.MapGet("/", () => "Приклад 08. /sources, /options/io, /options/snapshot, /options/monitor");
-
-// Повне дерево «ключ → значення (+ джерело)» — зручно для діагностики.
-app.MapGet("/sources", (IConfiguration config) =>
-    Results.Text(((IConfigurationRoot)config).GetDebugView()));
-
-// IOptions<T> — Singleton. Обчислюється один раз. Підходить для більшості випадків.
-app.MapGet("/options/io", (IOptions<CatalogOptions> opt) => opt.Value);
-
-// IOptionsSnapshot<T> — Scoped. Перечитується раз на запит: зміни в appsettings.json
-// підхопляться на наступному запиті. У middleware / singleton не інжектиться.
-app.MapGet("/options/snapshot", (IOptionsSnapshot<CatalogOptions> opt) => opt.Value);
-
-// IOptionsMonitor<T> — Singleton із CurrentValue та підпискою OnChange.
-// Єдиний варіант «живих» опцій для middleware і фонових сервісів.
-app.MapGet("/options/monitor", (IOptionsMonitor<CatalogOptions> mon) => mon.CurrentValue);
+app.MapControllers();   // дії — у OptionsController (тека Controllers/)
 
 app.Run();

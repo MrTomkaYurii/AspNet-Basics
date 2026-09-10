@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Asp.Versioning.Http" Version="10.2.3" />
+    <!-- Версіонування для контролерів MVC (додає .AddMvc(), атрибути [ApiVersion]). -->
+    <PackageReference Include="Asp.Versioning.Mvc" Version="10.2.1" />
   </ItemGroup>
 
   <ItemGroup>

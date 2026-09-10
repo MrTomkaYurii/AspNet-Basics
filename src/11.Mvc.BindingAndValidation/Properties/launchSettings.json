@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "11.MinimalApi.BindingAndValidation": {
+    "11.Mvc.BindingAndValidation": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

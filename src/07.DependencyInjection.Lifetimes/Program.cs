@@ -4,11 +4,11 @@ using DependencyInjection.Lifetimes;
 // ─────────────────────────────────────────────────────────────────────────────
 // ПРИКЛАД 07. Час життя сервісів у DI
 //
-//   Transient  — новий екземпляр на КОЖНЕ впровадження (навіть двічі в одному запиті);
+//   Transient  — новий екземпляр на КОЖНЕ впровадження (навіть двічі в одній дії);
 //   Scoped     — один екземпляр на HTTP-запит;
 //   Singleton  — один екземпляр на весь застосунок.
 //
-// Порівнюємо Id тих самих сервісів, узятих у middleware і в endpoint.
+// Порівнюємо Id тих самих сервісів, узятих у middleware і в дії контролера.
 // ─────────────────────────────────────────────────────────────────────────────
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<ITransientOperation, Operation>();
 builder.Services.AddScoped<IScopedOperation, Operation>();
 builder.Services.AddSingleton<ISingletonOperation, Operation>();
+builder.Services.AddControllers();
 builder.Services.AddApiDocs();
 
 var app = builder.Build();
@@ -28,7 +29,8 @@ var app = builder.Build();
 // ======================================================================
 app.MapApiDocs();
 
-// Middleware запам'ятовує Id Scoped-сервісу цього запиту.
+// Middleware запам'ятовує Id Scoped-сервісу цього запиту — щоб у дії порівняти,
+// що це той самий екземпляр (одна DI-область на весь запит).
 app.Use(async (context, next) =>
 {
     var scoped = context.RequestServices.GetRequiredService<IScopedOperation>();
@@ -40,31 +42,6 @@ app.Use(async (context, next) =>
 //  3 · ЗАПИТИ
 // ======================================================================
 app.MapGet("/", () => "Приклад 07. GET /ids — порівняйте id у межах запиту та між запитами.");
-
-app.MapGet("/ids", (
-    HttpContext http,
-    ITransientOperation transientA,
-    ITransientOperation transientB,
-    IScopedOperation scoped,
-    ISingletonOperation singleton) => new
-{
-    transientA = transientA.Id,                       // ← різні між собою
-    transientB = transientB.Id,
-    scoped = scoped.Id,                               // ← дорівнює scopedFromMiddleware
-    scopedFromMiddleware = http.Items["scopedFromMiddleware"],
-    singleton = singleton.Id,                         // ← однаковий завжди
-});
-
-// Як користуватися Scoped із Singleton / фонового сервісу: створити область вручну.
-app.MapGet("/scopes", (IServiceScopeFactory scopeFactory) =>
-{
-    using var a = scopeFactory.CreateScope();
-    using var b = scopeFactory.CreateScope();
-    return new
-    {
-        scopeA = a.ServiceProvider.GetRequiredService<IScopedOperation>().Id,
-        scopeB = b.ServiceProvider.GetRequiredService<IScopedOperation>().Id,   // різні області → різні Id
-    };
-});
+app.MapControllers();   // дії — у LifetimesController (тека Controllers/)
 
 app.Run();
